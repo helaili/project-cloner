@@ -1,21 +1,27 @@
 import { ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectIssues, CloneProjectTemplate, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CloneRepoTemplate, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, OrgId, OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, RepoTemplate, CreateIssue, CreateIssueMutationVariables, CreateIssueMutation, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, AddIssueToProject, SetProjectTextFieldValue, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValue, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, ProjectFieldDefinition, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValue, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValue, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValue, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables } from './../generated/graphql';
-import { Octokit } from "@octokit/rest";
-import { GitHubClient } from "../client";
-import { ApolloQueryResult } from "@apollo/client";
+import { ApolloClient, ApolloQueryResult, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client/core";
+
 import { ProjectMetadata } from './projectMetadata';
 
-
 export class GitHubAPI {
-  private octokit: Octokit;
+  private token : string;
 
   constructor(token: string) {
-    this.octokit = new Octokit({ auth: token });
+    this.token = token
   }
 
-  // Keeping that for reference in case we need to use the REST API
-  async getRepo(owner: string, repo: string) {
-    const response = await this.octokit.repos.get({ owner, repo });
-    return response.data;
+  githubClient(): ApolloClient<NormalizedCacheObject> {
+    return new ApolloClient({
+      link: new HttpLink({
+        uri: "https://api.github.com/graphql",
+        headers: {
+          'authorization': `token ${this.token}`,
+          'X-Github-Next-Global-ID': '1'
+        },
+        fetch,
+      }),
+      cache: new InMemoryCache(),
+    });
   }
 
   async getOrgId(owner: string) : Promise<string | undefined> {
@@ -23,7 +29,7 @@ export class GitHubAPI {
       'org': owner
     }
 
-    return GitHubClient().query<OrgIdQuery, OrgIdQueryVariables>({
+    return this.githubClient().query<OrgIdQuery, OrgIdQueryVariables>({
       query: OrgId, 
       variables: variables
     }).then((result) => {
@@ -37,7 +43,7 @@ export class GitHubAPI {
       'repo': repo
     }
 
-    return GitHubClient().query<RepoTemplateQuery, RepoTemplateQueryVariables>({
+    return this.githubClient().query<RepoTemplateQuery, RepoTemplateQueryVariables>({
       query: RepoTemplate, 
       variables: variables
     })
@@ -56,7 +62,7 @@ export class GitHubAPI {
       'visibility': RepositoryVisibility.Private
     }
 
-    return GitHubClient().mutate<CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables>({
+    return this.githubClient().mutate<CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables>({
       mutation: CloneRepoTemplate, 
       variables: variables
     }).then((result) => {
@@ -72,7 +78,7 @@ export class GitHubAPI {
 		  'ownerId': ownerId
     }
 
-    return GitHubClient().mutate<CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables>({
+    return this.githubClient().mutate<CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables>({
       mutation: CloneProjectTemplate, 
       variables: variables
     }).then((result) => {
@@ -90,7 +96,7 @@ export class GitHubAPI {
 		  'body': body
     }
 
-    return GitHubClient().mutate<CreateIssueMutation, CreateIssueMutationVariables>({
+    return this.githubClient().mutate<CreateIssueMutation, CreateIssueMutationVariables>({
       mutation: CreateIssue, 
       variables: variables
     }).then((result) => {
@@ -104,7 +110,7 @@ export class GitHubAPI {
 		  'issueId': issueId
     }
 
-    return GitHubClient().mutate<AddIssueToProjectMutation, AddIssueToProjectMutationVariables>({
+    return this.githubClient().mutate<AddIssueToProjectMutation, AddIssueToProjectMutationVariables>({
       mutation: AddIssueToProject, 
       variables: variables
     }).then((result) => {
@@ -120,7 +126,7 @@ export class GitHubAPI {
       'text': text
     }
 
-    return GitHubClient().mutate<SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables>({
+    return this.githubClient().mutate<SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables>({
       mutation: SetProjectTextFieldValue, 
       variables: variables
     }).then((result) => {
@@ -136,7 +142,7 @@ export class GitHubAPI {
       'num': num
     }
 
-    return GitHubClient().mutate<SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables>({
+    return this.githubClient().mutate<SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables>({
       mutation: SetProjectNumberFieldValue, 
       variables: variables
     }).then((result) => {
@@ -152,7 +158,7 @@ export class GitHubAPI {
       'date': date
     }
 
-    return GitHubClient().mutate<SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables>({
+    return this.githubClient().mutate<SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables>({
       mutation: SetProjectDateFieldValue, 
       variables: variables
     }).then((result) => {
@@ -168,7 +174,7 @@ export class GitHubAPI {
       'optionId': optionId
     }
 
-    return GitHubClient().mutate<SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables>({
+    return this.githubClient().mutate<SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables>({
       mutation: SetProjectSingleSelectFieldValue, 
       variables: variables
     }).then((result) => {
@@ -184,7 +190,7 @@ export class GitHubAPI {
       'iterationId': iterationId
     }
 
-    return GitHubClient().mutate<SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables>({
+    return this.githubClient().mutate<SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables>({
       mutation: SetProjectIterationFieldValue, 
       variables: variables
     }).then((result) => {
@@ -205,7 +211,7 @@ export class GitHubAPI {
       }
     }
     
-    return await GitHubClient().query<ProjectIssuesQuery, ProjectIssuesQueryVariables>({
+    return await this.githubClient().query<ProjectIssuesQuery, ProjectIssuesQueryVariables>({
       query: ProjectIssues, 
       variables: variables
     });
@@ -221,7 +227,7 @@ export class GitHubAPI {
       variables.fieldCursor = fieldCursor;
     }
     
-    return await GitHubClient().query<ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables>({
+    return await this.githubClient().query<ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables>({
       query: ProjectFieldDefinition, 
       variables: variables
     });

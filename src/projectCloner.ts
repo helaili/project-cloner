@@ -1,6 +1,6 @@
 import { ApolloQueryResult } from '@apollo/client';
 import { GitHubAPI } from './api/github';
-import { Project, ProjectIssuesQuery, ProjectV2Field, ProjectV2Item, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldIterationValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldTextValue } from './generated/graphql';
+import { ProjectIssuesQuery, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldIterationValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldTextValue } from './generated/graphql';
 import { ProjectMetadata } from './api/projectMetadata';
 
 export class ProjectCloner {

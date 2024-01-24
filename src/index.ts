@@ -1,7 +1,5 @@
-import { ApolloQueryResult } from '@apollo/client';
 import { GitHubAPI } from './api/github';
 import dotenv from 'dotenv';
-import { ProjectIssuesQuery, PageInfo } from './generated/graphql';
 import { ProjectCloner } from './projectCloner';
 
 
