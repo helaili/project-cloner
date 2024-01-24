@@ -179,21 +179,20 @@ export class ProjectCloner {
         }
       }
     }
-    /*
+    
     // Are there more issues to retrieve?
-    if(project?.data?.organization?.projectsV2.nodes?.[0]?.items.pageInfo?.hasNextPage) {
-      const issueCursor = project?.data?.organization?.projectsV2.nodes?.[0]?.items.pageInfo?.endCursor;
+    if(project?.data?.organization?.projectV2?.items.pageInfo?.hasNextPage) {
+      const issueCursor = project.data.organization.projectV2.items.pageInfo.endCursor;
       if (!issueCursor) {
-        throw new Error(`Failed to retrieve issues from project ${this.template_project} within organization ${this.owner}`);
+        throw new Error(`Failed to retrieve next batch of issues from project ${this.template_project_number} within organization ${this.owner}. No cursor was returned`);
       }
   
-      this.github.getProjectIssues(this.owner, this.template_project, issueCursor).then((project) => {
+      this.github.getProjectIssues(this.owner, this.template_project_number, issueCursor).then((project) => {
         if(!project) {
-          throw new Error(`Failed to retrieve issues from project ${this.template_project} within organization ${this.owner}`);
+          throw new Error(`Failed to retrieve issues from project ${this.template_project_number} within organization ${this.owner}`);
         }
-  
-        this.cloneIssues(clonedRepoId, clonedProjectId, project);
+        this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project)
       });
-    }*/
+    }
   }
 }
