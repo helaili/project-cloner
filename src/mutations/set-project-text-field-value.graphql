@@ -1,0 +1,14 @@
+mutation setProjectTextFieldValue($projectId: ID!, $itemId: ID!, $fieldId: ID!, $text: String!) {
+	updateProjectV2ItemFieldValue(input: {
+		fieldId: $fieldId, 
+		itemId: $itemId, 
+		projectId: $projectId, 
+		value: {
+			text: $text
+		}
+	}) {
+		projectV2Item {
+			id
+		}
+	}
+}

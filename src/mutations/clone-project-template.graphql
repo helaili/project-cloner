@@ -1,0 +1,13 @@
+mutation cloneProjectTemplate($ownerId: ID!, $projectId: ID!, $title: String!, $includeDraftIssues: Boolean!) {
+	copyProjectV2(input: {
+		includeDraftIssues: $includeDraftIssues,
+		title: $title,
+		projectId: $projectId,
+		ownerId: $ownerId
+	}) {
+		projectV2 {
+			id
+			number
+		}
+	}
+}

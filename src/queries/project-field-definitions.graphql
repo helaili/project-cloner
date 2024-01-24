@@ -1,0 +1,29 @@
+query ProjectFieldDefinition($org: String!, $number: Int!, $fieldCursor: String) {
+	organization(login: $org) {
+		projectV2(number:$number) {
+			title
+			id
+			fields(first: 100, after: $fieldCursor) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				nodes {
+					... on  ProjectV2Field {
+						id
+						name
+					}
+					... on  ProjectV2IterationField {
+						id
+						name
+					}
+					... on  ProjectV2SingleSelectField {
+						id
+						name
+					}
+				}
+			}
+		}
+	}
+}
+

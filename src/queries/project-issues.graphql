@@ -1,0 +1,100 @@
+query ProjectIssues($org: String!, $number: Int!, $issueCursor: String, $fieldCursor: String) {
+	organization(login: $org) {
+		projectV2(number: $number) {
+			title
+			id
+			owner {
+				id
+			}
+			items(first: 5, after: $issueCursor) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				nodes {
+					content {
+						__typename
+						... on DraftIssue {
+							title
+							body
+						}
+						... on Issue {
+							title
+							body
+						}
+						... on PullRequest {
+							title
+							body
+						}
+					}
+					fieldValues(first: 100, after: $fieldCursor) {
+						pageInfo {
+							hasNextPage
+							endCursor
+						}
+						nodes {
+							__typename
+							... on ProjectV2ItemFieldRepositoryValue {
+								repository {
+									name
+								}
+							}
+							... on ProjectV2ItemFieldTextValue {
+								id
+								text
+								field {
+									... on ProjectV2Field {
+										id
+										name
+									}
+								}
+							}
+							... on ProjectV2ItemFieldDateValue {
+								date
+								field {
+									... on ProjectV2Field {
+										id
+										name
+									}
+								}
+							}
+							... on ProjectV2ItemFieldIterationValue {
+								iterationId
+								title
+								startDate
+								duration
+								field {
+									... on ProjectV2IterationField {
+										id
+										name
+									}
+								}
+							}
+							... on ProjectV2ItemFieldSingleSelectValue {
+								name
+								optionId
+								field {
+									... on ProjectV2SingleSelectField {
+										id
+										name
+									}
+								}
+							}
+							... on ProjectV2ItemFieldNumberValue {
+								id
+								number
+								field {
+									... on ProjectV2Field {
+										id
+										name
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+

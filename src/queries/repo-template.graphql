@@ -1,0 +1,8 @@
+query repoTemplate($org: String!, $repo: String!) {
+	organization(login: $org) {
+		repository(name: $repo) {
+			id
+			description
+		}
+	}
+}

@@ -1,0 +1,14 @@
+mutation setProjectIterationFieldValue($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+	updateProjectV2ItemFieldValue(input: {
+		fieldId: $fieldId, 
+		itemId: $itemId, 
+		projectId: $projectId, 
+		value: {
+			iterationId: $iterationId
+		}
+	}) {
+		projectV2Item {
+			id
+		}
+	}
+}

@@ -1,0 +1,16 @@
+mutation cloneRepoTemplate(
+  $ownerId: ID!, $repoId: ID!, $repo: String!, $description: String!,
+  $includeAllBranches: Boolean, $visibility: RepositoryVisibility!) {
+	cloneTemplateRepository(input: {
+		includeAllBranches: $includeAllBranches,
+		name: $repo,
+		ownerId: $ownerId,
+		description: $description, 
+		repositoryId: $repoId,
+		visibility: $visibility
+	}) {
+		repository {
+			id
+		}
+	}
+}

@@ -1,0 +1,14 @@
+mutation setProjectNumberFieldValue($projectId: ID!, $itemId: ID!, $fieldId: ID!, $num: Float!) {
+	updateProjectV2ItemFieldValue(input: {
+		fieldId: $fieldId, 
+		itemId: $itemId, 
+		projectId: $projectId, 
+		value: {
+			number: $num
+		}
+	}) {
+		projectV2Item {
+			id
+		}
+	}
+}
