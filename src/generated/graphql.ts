@@ -6067,6 +6067,8 @@ export type Enterprise = AnnouncementBanner & Node & {
   announcementUserDismissible?: Maybe<Scalars['Boolean']['output']>;
   /** A URL pointing to the enterprise's public avatar. */
   avatarUrl: Scalars['URI']['output'];
+  /** The enterprise's billing email. */
+  billingEmail?: Maybe<Scalars['String']['output']>;
   /** Enterprise billing information visible to enterprise billing managers. */
   billingInfo?: Maybe<EnterpriseBillingInfo>;
   /** Identifies the date and time when the object was created. */
@@ -13951,6 +13953,8 @@ export type Organization = Actor & AnnouncementBanner & MemberStatusable & Node 
   isVerified: Scalars['Boolean']['output'];
   /** Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity. */
   itemShowcase: ProfileItemShowcase;
+  /** Calculate how much each sponsor has ever paid total to this maintainer via GitHub Sponsors. Does not include sponsorships paid via Patreon. */
+  lifetimeReceivedSponsorshipValues: SponsorAndLifetimeValueConnection;
   /** The organization's public profile location. */
   location?: Maybe<Scalars['String']['output']>;
   /** The organization's login name. */
@@ -14138,6 +14142,16 @@ export type OrganizationIpAllowListEntriesArgs = {
 /** An account on GitHub, with one or more owners, that has repositories, members and teams. */
 export type OrganizationIsSponsoredByArgs = {
   accountLogin: Scalars['String']['input'];
+};
+
+
+/** An account on GitHub, with one or more owners, that has repositories, members and teams. */
+export type OrganizationLifetimeReceivedSponsorshipValuesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<SponsorAndLifetimeValueOrder>;
 };
 
 
@@ -23527,6 +23541,59 @@ export enum SocialAccountProvider {
 /** Entities that can sponsor others via GitHub Sponsors */
 export type Sponsor = Organization | User;
 
+/** A GitHub account and the total amount in USD they've paid for sponsorships to a particular maintainer. Does not include payments made via Patreon. */
+export type SponsorAndLifetimeValue = {
+  __typename?: 'SponsorAndLifetimeValue';
+  /** The amount in cents. */
+  amountInCents: Scalars['Int']['output'];
+  /** The amount in USD, formatted as a string. */
+  formattedAmount: Scalars['String']['output'];
+  /** The sponsor's GitHub account. */
+  sponsor: Sponsorable;
+  /** The maintainer's GitHub account. */
+  sponsorable: Sponsorable;
+};
+
+/** The connection type for SponsorAndLifetimeValue. */
+export type SponsorAndLifetimeValueConnection = {
+  __typename?: 'SponsorAndLifetimeValueConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<Maybe<SponsorAndLifetimeValueEdge>>>;
+  /** A list of nodes. */
+  nodes?: Maybe<Array<Maybe<SponsorAndLifetimeValue>>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type SponsorAndLifetimeValueEdge = {
+  __typename?: 'SponsorAndLifetimeValueEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node?: Maybe<SponsorAndLifetimeValue>;
+};
+
+/** Ordering options for connections to get sponsor entities and associated USD amounts for GitHub Sponsors. */
+export type SponsorAndLifetimeValueOrder = {
+  /** The ordering direction. */
+  direction: OrderDirection;
+  /** The field to order results by. */
+  field: SponsorAndLifetimeValueOrderField;
+};
+
+/** Properties by which sponsor and lifetime value connections can be ordered. */
+export enum SponsorAndLifetimeValueOrderField {
+  /** Order results by how much money the sponsor has paid in total. */
+  LifetimeValue = 'LIFETIME_VALUE',
+  /** Order results by the sponsor's login (username). */
+  SponsorLogin = 'SPONSOR_LOGIN',
+  /** Order results by the sponsor's relevance to the viewer. */
+  SponsorRelevance = 'SPONSOR_RELEVANCE'
+}
+
 /** The connection type for Sponsor. */
 export type SponsorConnection = {
   __typename?: 'SponsorConnection';
@@ -23575,6 +23642,8 @@ export type Sponsorable = {
   isSponsoredBy: Scalars['Boolean']['output'];
   /** True if the viewer is sponsored by this user/organization. */
   isSponsoringViewer: Scalars['Boolean']['output'];
+  /** Calculate how much each sponsor has ever paid total to this maintainer via GitHub Sponsors. Does not include sponsorships paid via Patreon. */
+  lifetimeReceivedSponsorshipValues: SponsorAndLifetimeValueConnection;
   /** The estimated monthly GitHub Sponsors income for this user/organization in cents (USD). */
   monthlyEstimatedSponsorsIncomeInCents: Scalars['Int']['output'];
   /** List of users and organizations this entity is sponsoring. */
@@ -23607,6 +23676,16 @@ export type Sponsorable = {
 /** Entities that can sponsor or be sponsored through GitHub Sponsors. */
 export type SponsorableIsSponsoredByArgs = {
   accountLogin: Scalars['String']['input'];
+};
+
+
+/** Entities that can sponsor or be sponsored through GitHub Sponsors. */
+export type SponsorableLifetimeReceivedSponsorshipValuesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<SponsorAndLifetimeValueOrder>;
 };
 
 
@@ -26801,6 +26880,8 @@ export type UnpinIssuePayload = {
   __typename?: 'UnpinIssuePayload';
   /** A unique identifier for the client performing the mutation. */
   clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The id of the pinned issue that was unpinned */
+  id?: Maybe<Scalars['ID']['output']>;
   /** The issue that was unpinned */
   issue?: Maybe<Issue>;
 };
@@ -28307,6 +28388,8 @@ export type User = Actor & Node & PackageOwner & ProfileOwner & ProjectOwner & P
   issues: IssueConnection;
   /** Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity. */
   itemShowcase: ProfileItemShowcase;
+  /** Calculate how much each sponsor has ever paid total to this maintainer via GitHub Sponsors. Does not include sponsorships paid via Patreon. */
+  lifetimeReceivedSponsorshipValues: SponsorAndLifetimeValueConnection;
   /** A user-curated list of repositories */
   lists: UserListConnection;
   /** The user's public profile location. */
@@ -28545,6 +28628,16 @@ export type UserIssuesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<IssueOrder>;
   states?: InputMaybe<Array<IssueState>>;
+};
+
+
+/** A user is an individual's account on GitHub that owns repositories and can make new content. */
+export type UserLifetimeReceivedSponsorshipValuesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<SponsorAndLifetimeValueOrder>;
 };
 
 
@@ -30794,6 +30887,11 @@ export type ResolversTypes = {
   SocialAccountEdge: ResolverTypeWrapper<SocialAccountEdge>;
   SocialAccountProvider: SocialAccountProvider;
   Sponsor: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Sponsor']>;
+  SponsorAndLifetimeValue: ResolverTypeWrapper<SponsorAndLifetimeValue>;
+  SponsorAndLifetimeValueConnection: ResolverTypeWrapper<SponsorAndLifetimeValueConnection>;
+  SponsorAndLifetimeValueEdge: ResolverTypeWrapper<SponsorAndLifetimeValueEdge>;
+  SponsorAndLifetimeValueOrder: SponsorAndLifetimeValueOrder;
+  SponsorAndLifetimeValueOrderField: SponsorAndLifetimeValueOrderField;
   SponsorConnection: ResolverTypeWrapper<Omit<SponsorConnection, 'nodes'> & { nodes?: Maybe<Array<Maybe<ResolversTypes['Sponsor']>>> }>;
   SponsorEdge: ResolverTypeWrapper<Omit<SponsorEdge, 'node'> & { node?: Maybe<ResolversTypes['Sponsor']> }>;
   SponsorOrder: SponsorOrder;
@@ -32125,6 +32223,10 @@ export type ResolversParentTypes = {
   SocialAccountConnection: SocialAccountConnection;
   SocialAccountEdge: SocialAccountEdge;
   Sponsor: ResolversUnionTypes<ResolversParentTypes>['Sponsor'];
+  SponsorAndLifetimeValue: SponsorAndLifetimeValue;
+  SponsorAndLifetimeValueConnection: SponsorAndLifetimeValueConnection;
+  SponsorAndLifetimeValueEdge: SponsorAndLifetimeValueEdge;
+  SponsorAndLifetimeValueOrder: SponsorAndLifetimeValueOrder;
   SponsorConnection: Omit<SponsorConnection, 'nodes'> & { nodes?: Maybe<Array<Maybe<ResolversParentTypes['Sponsor']>>> };
   SponsorEdge: Omit<SponsorEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Sponsor']> };
   SponsorOrder: SponsorOrder;
@@ -34536,6 +34638,7 @@ export type EnterpriseResolvers<ContextType = any, ParentType extends ResolversP
   announcementExpiresAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   announcementUserDismissible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   avatarUrl?: Resolver<ResolversTypes['URI'], ParentType, ContextType, Partial<EnterpriseAvatarUrlArgs>>;
+  billingEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billingInfo?: Resolver<Maybe<ResolversTypes['EnterpriseBillingInfo']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   databaseId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -37088,6 +37191,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
   isSponsoringViewer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   itemShowcase?: Resolver<ResolversTypes['ProfileItemShowcase'], ParentType, ContextType>;
+  lifetimeReceivedSponsorshipValues?: Resolver<ResolversTypes['SponsorAndLifetimeValueConnection'], ParentType, ContextType, RequireFields<OrganizationLifetimeReceivedSponsorshipValuesArgs, 'orderBy'>>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   login?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   mannequins?: Resolver<ResolversTypes['MannequinConnection'], ParentType, ContextType, RequireFields<OrganizationMannequinsArgs, 'orderBy'>>;
@@ -40480,6 +40584,28 @@ export type SponsorResolvers<ContextType = any, ParentType extends ResolversPare
   __resolveType: TypeResolveFn<'Organization' | 'User', ParentType, ContextType>;
 };
 
+export type SponsorAndLifetimeValueResolvers<ContextType = any, ParentType extends ResolversParentTypes['SponsorAndLifetimeValue'] = ResolversParentTypes['SponsorAndLifetimeValue']> = {
+  amountInCents?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  formattedAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sponsor?: Resolver<ResolversTypes['Sponsorable'], ParentType, ContextType>;
+  sponsorable?: Resolver<ResolversTypes['Sponsorable'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SponsorAndLifetimeValueConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SponsorAndLifetimeValueConnection'] = ResolversParentTypes['SponsorAndLifetimeValueConnection']> = {
+  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['SponsorAndLifetimeValueEdge']>>>, ParentType, ContextType>;
+  nodes?: Resolver<Maybe<Array<Maybe<ResolversTypes['SponsorAndLifetimeValue']>>>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SponsorAndLifetimeValueEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SponsorAndLifetimeValueEdge'] = ResolversParentTypes['SponsorAndLifetimeValueEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['SponsorAndLifetimeValue']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SponsorConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SponsorConnection'] = ResolversParentTypes['SponsorConnection']> = {
   edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['SponsorEdge']>>>, ParentType, ContextType>;
   nodes?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sponsor']>>>, ParentType, ContextType>;
@@ -40500,6 +40626,7 @@ export type SponsorableResolvers<ContextType = any, ParentType extends Resolvers
   hasSponsorsListing?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isSponsoredBy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<SponsorableIsSponsoredByArgs, 'accountLogin'>>;
   isSponsoringViewer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  lifetimeReceivedSponsorshipValues?: Resolver<ResolversTypes['SponsorAndLifetimeValueConnection'], ParentType, ContextType, RequireFields<SponsorableLifetimeReceivedSponsorshipValuesArgs, 'orderBy'>>;
   monthlyEstimatedSponsorsIncomeInCents?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   sponsoring?: Resolver<ResolversTypes['SponsorConnection'], ParentType, ContextType, RequireFields<SponsorableSponsoringArgs, 'orderBy'>>;
   sponsors?: Resolver<ResolversTypes['SponsorConnection'], ParentType, ContextType, RequireFields<SponsorableSponsorsArgs, 'orderBy'>>;
@@ -41500,6 +41627,7 @@ export type UnminimizeCommentPayloadResolvers<ContextType = any, ParentType exte
 
 export type UnpinIssuePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['UnpinIssuePayload'] = ResolversParentTypes['UnpinIssuePayload']> = {
   clientMutationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -41944,6 +42072,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   issueComments?: Resolver<ResolversTypes['IssueCommentConnection'], ParentType, ContextType, Partial<UserIssueCommentsArgs>>;
   issues?: Resolver<ResolversTypes['IssueConnection'], ParentType, ContextType, Partial<UserIssuesArgs>>;
   itemShowcase?: Resolver<ResolversTypes['ProfileItemShowcase'], ParentType, ContextType>;
+  lifetimeReceivedSponsorshipValues?: Resolver<ResolversTypes['SponsorAndLifetimeValueConnection'], ParentType, ContextType, RequireFields<UserLifetimeReceivedSponsorshipValuesArgs, 'orderBy'>>;
   lists?: Resolver<ResolversTypes['UserListConnection'], ParentType, ContextType, Partial<UserListsArgs>>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   login?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -43034,6 +43163,9 @@ export type Resolvers<ContextType = any> = {
   SocialAccountConnection?: SocialAccountConnectionResolvers<ContextType>;
   SocialAccountEdge?: SocialAccountEdgeResolvers<ContextType>;
   Sponsor?: SponsorResolvers<ContextType>;
+  SponsorAndLifetimeValue?: SponsorAndLifetimeValueResolvers<ContextType>;
+  SponsorAndLifetimeValueConnection?: SponsorAndLifetimeValueConnectionResolvers<ContextType>;
+  SponsorAndLifetimeValueEdge?: SponsorAndLifetimeValueEdgeResolvers<ContextType>;
   SponsorConnection?: SponsorConnectionResolvers<ContextType>;
   SponsorEdge?: SponsorEdgeResolvers<ContextType>;
   Sponsorable?: SponsorableResolvers<ContextType>;
