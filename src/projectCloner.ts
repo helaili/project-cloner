@@ -171,6 +171,9 @@ export class ProjectCloner {
     
     // Are there more issues to retrieve?
     if(project?.data?.organization?.projectV2?.items.pageInfo?.hasNextPage) {
+      // Wait for 30 seconds to avoid hitting the rate limit
+      await new Promise(resolve => setTimeout(resolve, 30000));
+      
       const issueCursor = project.data.organization.projectV2.items.pageInfo.endCursor;
       if (!issueCursor) {
         throw new Error(`Failed to retrieve next batch of issues from project ${this.template_project_number} within organization ${this.owner}. No cursor was returned`);
