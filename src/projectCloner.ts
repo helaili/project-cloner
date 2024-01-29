@@ -4,7 +4,6 @@ import { ProjectIssuesQuery, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldIter
 import { ProjectMetadata } from './api/projectMetadata';
 
 export class ProjectCloner {
-  private token: string;
   private template_owner: string;
   private template_repo: string;
   private template_project_number: number;
@@ -13,7 +12,6 @@ export class ProjectCloner {
   private github: GitHubAPI;
 
   constructor(token: string, template_owner: string, template_repo: string, template_project_number: number, owner: string, repo: string) {
-    this.token = token;
     this.template_owner = template_owner;
     this.template_repo = template_repo;
     this.template_project_number = template_project_number;
@@ -26,23 +24,13 @@ export class ProjectCloner {
   async clone() {
     const orgId = await this.github.getOrgId(this.template_owner)
     const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo)
-    const templateRepoId = templateRepo?.data?.organization?.repository?.id;
-    let templateRepoDescription = templateRepo?.data?.organization?.repository?.description;
     const standardProjectFields = ['Title', 'Assignees', 'Status', 'Labels', 'Linked pull requests', 
         'Tracks', 'Reviewers', 'Repository', 'Milestone', 'Tracked by'];
 
-    if (!templateRepoId || !orgId) {
-      throw new Error('Template repository ID or organization ID is not set');
-    }
-
-    if (!templateRepoDescription) {
-      templateRepoDescription = '';
-    }
-
-    console.log(`Org id is ${orgId}, template repo id is ${templateRepoId}`)
+    console.log(`Org id is ${orgId}, template repo id is ${templateRepo.id}`)
 
     // Create a new repository from the template template_owner/template_repo
-    const clonedRepoId = await this.github.cloneRepoTemplate(templateRepoId, orgId, this.repo, templateRepoDescription)
+    const clonedRepoId = await this.github.cloneRepoTemplate(templateRepo.id, orgId, this.repo, templateRepo.description)
 
     if (!clonedRepoId) {
       throw new Error(`Failed to create the new repository ${this.repo} from template ${this.template_repo}`);
@@ -76,6 +64,7 @@ export class ProjectCloner {
 
           const fieldIdMap = new Map<string, string>();
           for(const field of projectFieldDefinition?.data?.organization?.projectV2?.fields?.nodes || []) {
+            // We do not want the non-project specific fields (like title, assignee...)
             if (!standardProjectFields.includes(field?.name ?? '')) {
               console.log(`Field name is ${field?.name}, id is ${field?.id}`)
               fieldIdMap.set(field?.name ?? '', field?.id ?? '');

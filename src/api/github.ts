@@ -2,12 +2,13 @@ import { ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectIssues, ClonePr
 import { ApolloClient, ApolloQueryResult, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client/core";
 
 import { ProjectMetadata } from './projectMetadata';
+import { RepoMetadata } from './repoMetadata';
 
 export class GitHubAPI {
   private token : string;
 
   constructor(token: string) {
-    this.token = token
+    this.token = token;
   }
 
   githubClient(): ApolloClient<NormalizedCacheObject> {
@@ -24,7 +25,8 @@ export class GitHubAPI {
     });
   }
 
-  async getOrgId(owner: string) : Promise<string | undefined> {
+  // Returns the organization id such as "O_kgDOAlIw4Q"
+  async getOrgId(owner: string) : Promise<string> {
     const variables = {
       'org': owner
     }
@@ -33,11 +35,16 @@ export class GitHubAPI {
       query: OrgId, 
       variables: variables
     }).then((result) => {
-      return result.data.organization?.id;
+      if (!result.data.organization?.id) {
+        throw new Error(`Failed to retrieve organization ${owner}`); 
+      }
+      
+      return result.data.organization.id;
     });
   }
 
-  async getRepoTemplate(owner: string, repo: string) : Promise<ApolloQueryResult<RepoTemplateQuery> | undefined> {
+  // Retrieve the id and description of a repository.
+  async getRepoTemplate(owner: string, repo: string) : Promise<RepoMetadata> {
     const variables = {
       'org': owner,
       'repo': repo
@@ -46,6 +53,11 @@ export class GitHubAPI {
     return this.githubClient().query<RepoTemplateQuery, RepoTemplateQueryVariables>({
       query: RepoTemplate, 
       variables: variables
+    }).then((result) => {
+      if (!result.data.organization?.repository?.id) {
+        throw new Error(`Failed to retrieve repository ${repo} within organization ${owner}`); 
+      }
+      return new RepoMetadata(result.data.organization?.repository?.id, result.data.organization.repository?.description);
     })
   }
 
@@ -231,7 +243,5 @@ export class GitHubAPI {
       query: ProjectFieldDefinition, 
       variables: variables
     });
-  }
-
-  
+  } 
 }
