@@ -1,6 +1,6 @@
 {
   "name": "@helaili/project-cloner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Clone a GitHub project and its issues to a new repo and recreate the project board",
   "main": "src/index.ts",
   "scripts": {
@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/helaili/project-cloner.git"
+    "url": "git+https://github.com/helaili/project-cloner.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
