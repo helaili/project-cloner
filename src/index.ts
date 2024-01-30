@@ -38,7 +38,12 @@ async function main() {
     throw new Error('REPO is not set');
   }
 
-  const projectCloner = new ProjectCloner(token, template_owner, template_repo, template_project_number, owner, repo);
+  const project = process.env.PROJECT;
+  if (!project) {
+    throw new Error('PROJECT is not set');
+  }
+
+  const projectCloner = new ProjectCloner(token, template_owner, template_repo, template_project_number, owner, repo, project);
   await projectCloner.clone();
 }
 

@@ -9,14 +9,16 @@ export class ProjectCloner {
   private template_project_number: number;
   private owner: string;
   private repo: string;
+  private project: string;
   private github: GitHubAPI;
 
-  constructor(token: string, template_owner: string, template_repo: string, template_project_number: number, owner: string, repo: string) {
+  constructor(token: string, template_owner: string, template_repo: string, template_project_number: number, owner: string, repo: string, project: string) {
     this.template_owner = template_owner;
     this.template_repo = template_repo;
     this.template_project_number = template_project_number;
     this.owner = owner;
     this.repo = repo;
+    this.project = project;
     this.github = new GitHubAPI(token);
 
   }
@@ -49,7 +51,7 @@ export class ProjectCloner {
       console.log(`Template project id is ${projectId}`)
     
       // Creat a ne project from the template template_project in the org template_owner
-      this.github.cloneProjectTemplate(orgId, projectId, `${project?.data?.organization?.projectV2?.title} Clone`).then((clonedProjectMetadata) => {
+      this.github.cloneProjectTemplate(orgId, projectId, this.project).then((clonedProjectMetadata) => {
         if (!clonedProjectMetadata) {
           throw new Error(`Failed to clone project ${this.template_project_number} within organization ${this.template_owner}`);
         }
