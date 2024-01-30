@@ -1,21 +1,24 @@
-
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "src/generated/github-schema-loader.ts",
+  emitLegacyCommonJSImports: false,
+  schema: [
+    {
+      'https://api.github.com/graphql': {
+        headers: {
+          'User-Agent': 'graphql-codegen',
+          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        },
+      },
+    },
+  ],
   documents: ["src/mutations/*.graphql", "src/queries/*.graphql"],
   generates: {
-    "src/generated/graphql.ts": {
-      plugins: [
-        "typescript", 
-        "typescript-resolvers", 
-        "typescript-document-nodes",
-        "typescript-operations"
-      ]
+    "src/generated/gql/": {
+      preset: 'client-preset',
     }
-  },
-  require: ["ts-node/register"],
+  }
 };
 
-export default config;
+module.exports = config;

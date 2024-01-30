@@ -1,7 +1,7 @@
 import { ApolloQueryResult } from '@apollo/client';
-import { GitHubAPI } from './api/github';
-import { ProjectIssuesQuery, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldIterationValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldTextValue } from './generated/graphql';
-import { ProjectMetadata } from './api/projectMetadata';
+import { GitHubAPI } from './api/github.js';
+import type { ProjectMetadata } from './api/projectMetadata.js';
+import { ProjectIssuesQuery, ProjectV2ItemFieldTextValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldIterationValue } from './generated/gql/graphql.js';
 
 export class ProjectCloner {
   private template_owner: string;
@@ -41,7 +41,7 @@ export class ProjectCloner {
     console.log(`Cloned repository id is ${clonedRepoId}`)
 
     // Getting the project template allong with all its linked issues
-    return this.github.getProjectIssues(this.owner, this.template_project_number).then((project) => {
+    return this.github.getProjectIssues(this.owner, this.template_project_number).then((project: ApolloQueryResult<ProjectIssuesQuery> | undefined) => {
       const projectId = project?.data?.organization?.projectV2?.id;
       
       if (!projectId) {
@@ -198,3 +198,4 @@ export class ProjectCloner {
     }
   }
 }
+

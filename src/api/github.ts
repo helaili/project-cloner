@@ -1,8 +1,8 @@
-import { ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectIssues, CloneProjectTemplate, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CloneRepoTemplate, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, OrgId, OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, RepoTemplate, CreateIssue, CreateIssueMutationVariables, CreateIssueMutation, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, AddIssueToProject, SetProjectTextFieldValue, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValue, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, ProjectFieldDefinition, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValue, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValue, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValue, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables } from './../generated/graphql';
-import { ApolloClient, ApolloQueryResult, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client/core";
-
-import { ProjectMetadata } from './projectMetadata';
-import { RepoMetadata } from './repoMetadata';
+import { OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CreateIssueMutation, CreateIssueMutationVariables, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables, ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, OrgIdDocument, RepoTemplateDocument, CloneRepoTemplateDocument, CloneProjectTemplateDocument, CreateIssueDocument, AddIssueToProjectDocument, SetProjectTextFieldValueDocument, SetProjectNumberFieldValueDocument, SetProjectDateFieldValueDocument, SetProjectSingleSelectFieldValueDocument, SetProjectIterationFieldValueDocument, ProjectIssuesDocument, ProjectFieldDefinitionDocument } from '../generated/gql/graphql.js';
+import { ProjectMetadata } from './projectMetadata.js';
+import { RepoMetadata } from './repoMetadata.js';
+import type { ApolloQueryResult, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
 
 export class GitHubAPI {
   private token : string;
@@ -32,7 +32,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().query<OrgIdQuery, OrgIdQueryVariables>({
-      query: OrgId, 
+      query: OrgIdDocument, 
       variables: variables
     }).then((result) => {
       if (!result.data.organization?.id) {
@@ -51,7 +51,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().query<RepoTemplateQuery, RepoTemplateQueryVariables>({
-      query: RepoTemplate, 
+      query: RepoTemplateDocument, 
       variables: variables
     }).then((result) => {
       if (!result.data.organization?.repository?.id) {
@@ -75,7 +75,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables>({
-      mutation: CloneRepoTemplate, 
+      mutation: CloneRepoTemplateDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.cloneTemplateRepository?.repository?.id;
@@ -91,7 +91,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables>({
-      mutation: CloneProjectTemplate, 
+      mutation: CloneProjectTemplateDocument, 
       variables: variables
     }).then((result) => {
       if(result.data?.copyProjectV2?.projectV2) {
@@ -108,7 +108,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<CreateIssueMutation, CreateIssueMutationVariables>({
-      mutation: CreateIssue, 
+      mutation: CreateIssueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.createIssue?.issue?.id;
@@ -122,7 +122,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<AddIssueToProjectMutation, AddIssueToProjectMutationVariables>({
-      mutation: AddIssueToProject, 
+      mutation: AddIssueToProjectDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.addProjectV2ItemById?.item?.id;
@@ -138,7 +138,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables>({
-      mutation: SetProjectTextFieldValue, 
+      mutation: SetProjectTextFieldValueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.updateProjectV2ItemFieldValue?.projectV2Item?.id
@@ -154,7 +154,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables>({
-      mutation: SetProjectNumberFieldValue, 
+      mutation: SetProjectNumberFieldValueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.updateProjectV2ItemFieldValue?.projectV2Item?.id
@@ -170,7 +170,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables>({
-      mutation: SetProjectDateFieldValue, 
+      mutation: SetProjectDateFieldValueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.updateProjectV2ItemFieldValue?.projectV2Item?.id
@@ -186,7 +186,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables>({
-      mutation: SetProjectSingleSelectFieldValue, 
+      mutation: SetProjectSingleSelectFieldValueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.updateProjectV2ItemFieldValue?.projectV2Item?.id
@@ -202,7 +202,7 @@ export class GitHubAPI {
     }
 
     return this.githubClient().mutate<SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables>({
-      mutation: SetProjectIterationFieldValue, 
+      mutation: SetProjectIterationFieldValueDocument, 
       variables: variables
     }).then((result) => {
       return result.data?.updateProjectV2ItemFieldValue?.projectV2Item?.id
@@ -223,7 +223,7 @@ export class GitHubAPI {
     }
     
     return await this.githubClient().query<ProjectIssuesQuery, ProjectIssuesQueryVariables>({
-      query: ProjectIssues, 
+      query: ProjectIssuesDocument, 
       variables: variables
     });
   }
@@ -239,7 +239,7 @@ export class GitHubAPI {
     }
     
     return await this.githubClient().query<ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables>({
-      query: ProjectFieldDefinition, 
+      query: ProjectFieldDefinitionDocument, 
       variables: variables
     });
   } 
