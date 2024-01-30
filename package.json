@@ -13,6 +13,10 @@
   "keywords": [],
   "author": "helaili@github.com",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/helaili/project-cloner.git"
+  },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript": "4.0.1",
