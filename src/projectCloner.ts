@@ -56,24 +56,30 @@ export class ProjectCloner {
 
         console.log(`Cloned project id is ${clonedProjectMetadata.id}, number is ${clonedProjectMetadata.number}`)
         
-        // Getting the field IDs for the new project so we can update the issues
-        this.github.getProjectFieldDefinition(this.owner, clonedProjectMetadata.number).then((projectFieldDefinition) => {
-          if (!projectFieldDefinition) {
-            throw new Error(`Failed to retrieve project field definition for project ${clonedProjectMetadata.number} from organization ${this.owner}`);
-          }
+        this.getProjectFieldDefinition(clonedProjectMetadata, standardProjectFields, clonedRepoId, project).then((fieldIdMap) => {
+          this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project);
+        });
+      });
+    });
+  }
 
-          const fieldIdMap = new Map<string, string>();
-          for(const field of projectFieldDefinition?.data?.organization?.projectV2?.fields?.nodes || []) {
-            // We do not want the non-project specific fields (like title, assignee...)
-            if (!standardProjectFields.includes(field?.name ?? '')) {
-              console.log(`Field name is ${field?.name}, id is ${field?.id}`)
-              fieldIdMap.set(field?.name ?? '', field?.id ?? '');
-            }
-          }
+  // Getting the field IDs for the new project so we can set their values withing the new issues
+  private async getProjectFieldDefinition(clonedProjectMetadata: ProjectMetadata, standardProjectFields: string[], clonedRepoId: string, project: ApolloQueryResult<ProjectIssuesQuery>) : Promise<Map<string, string>> {
+    return this.github.getProjectFieldDefinition(this.owner, clonedProjectMetadata.number).then((projectFieldDefinition) => {
+      if (!projectFieldDefinition) {
+        throw new Error(`Failed to retrieve project field definition for project ${clonedProjectMetadata.number} from organization ${this.owner}`);
+      }
 
-          this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project)
-        })
-      })
+      const fieldIdMap = new Map<string, string>();
+      for (const field of projectFieldDefinition?.data?.organization?.projectV2?.fields?.nodes || []) {
+        // We do not want the non-project specific fields (like title, assignee...)
+        if (!standardProjectFields.includes(field?.name ?? '')) {
+          console.log(`Field name is ${field?.name}, id is ${field?.id}`);
+          fieldIdMap.set(field?.name ?? '', field?.id ?? '');
+        }
+      }
+
+      return fieldIdMap;
     });
   }
 
@@ -173,7 +179,7 @@ export class ProjectCloner {
     if(project?.data?.organization?.projectV2?.items.pageInfo?.hasNextPage) {
       // Wait for 30 seconds to avoid hitting the rate limit
       await new Promise(resolve => setTimeout(resolve, 30000));
-      
+
       const issueCursor = project.data.organization.projectV2.items.pageInfo.endCursor;
       if (!issueCursor) {
         throw new Error(`Failed to retrieve next batch of issues from project ${this.template_project_number} within organization ${this.owner}. No cursor was returned`);
