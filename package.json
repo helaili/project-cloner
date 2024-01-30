@@ -13,10 +13,7 @@
   "keywords": [],
   "author": "helaili@github.com",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/helaili/project-cloner.git"
-  },
+  "repository": "https://github.com/helaili/project-cloner.git",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
