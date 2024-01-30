@@ -1,7 +1,7 @@
 {
-  "name": "my-octokit-project",
+  "name": "project-cloner",
   "version": "1.0.0",
-  "description": "",
+  "description": "Clone a GitHub project and its issues to a new repo and recreate the project board",
   "main": "src/index.ts",
   "scripts": {
     "test": "jest",
@@ -11,8 +11,8 @@
     "clean": "gh repo delete octodemo/Mona-Kart-Clone --yes && gh project list --owner octodemo --format json --jq '.projects[] | select(.title == \"Mona Kart Roadmap Clone\") | .number' | xargs -I % gh project delete % --owner octodemo"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "helaili@github.com",
+  "license": "MIT",
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript": "4.0.1",
