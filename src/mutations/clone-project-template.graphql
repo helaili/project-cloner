@@ -8,6 +8,7 @@ mutation cloneProjectTemplate($ownerId: ID!, $projectId: ID!, $title: String!, $
 		projectV2 {
 			id
 			number
+			url
 		}
 	}
 }

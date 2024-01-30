@@ -44,7 +44,8 @@ async function main() {
   }
 
   const projectCloner = new ProjectCloner(token, template_owner, template_repo, template_project_number, owner, repo, project);
-  await projectCloner.clone();
+  const projectMetadata = await projectCloner.clone();
+  console.log(`Cloned project ${projectMetadata.number} with id ${projectMetadata.id} at ${projectMetadata.url}`);
 }
 
 main().catch(console.error);

@@ -94,9 +94,8 @@ export class GitHubAPI {
       mutation: CloneProjectTemplate, 
       variables: variables
     }).then((result) => {
-      if(result.data?.copyProjectV2?.projectV2?.id && result.data?.copyProjectV2?.projectV2?.number) {
-        return new ProjectMetadata(result.data.copyProjectV2.projectV2.id, 
-          result.data.copyProjectV2.projectV2.number);
+      if(result.data?.copyProjectV2?.projectV2) {
+        return new ProjectMetadata(result.data.copyProjectV2.projectV2.id, result.data.copyProjectV2.projectV2.number, result.data.copyProjectV2.projectV2.url);
       }
     });
   }

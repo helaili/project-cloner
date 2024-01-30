@@ -23,7 +23,7 @@ export class ProjectCloner {
 
   }
 
-  async clone() {
+  async clone() : Promise<ProjectMetadata>{
     const orgId = await this.github.getOrgId(this.template_owner)
     const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo)
     const standardProjectFields = ['Title', 'Assignees', 'Status', 'Labels', 'Linked pull requests', 
@@ -41,7 +41,7 @@ export class ProjectCloner {
     console.log(`Cloned repository id is ${clonedRepoId}`)
 
     // Getting the project template allong with all its linked issues
-    this.github.getProjectIssues(this.owner, this.template_project_number).then((project) => {
+    return this.github.getProjectIssues(this.owner, this.template_project_number).then((project) => {
       const projectId = project?.data?.organization?.projectV2?.id;
       
       if (!projectId) {
@@ -51,15 +51,17 @@ export class ProjectCloner {
       console.log(`Template project id is ${projectId}`)
     
       // Creat a ne project from the template template_project in the org template_owner
-      this.github.cloneProjectTemplate(orgId, projectId, this.project).then((clonedProjectMetadata) => {
+      return this.github.cloneProjectTemplate(orgId, projectId, this.project).then((clonedProjectMetadata) => {
         if (!clonedProjectMetadata) {
           throw new Error(`Failed to clone project ${this.template_project_number} within organization ${this.template_owner}`);
         }
 
         console.log(`Cloned project id is ${clonedProjectMetadata.id}, number is ${clonedProjectMetadata.number}`)
         
-        this.getProjectFieldDefinition(clonedProjectMetadata, standardProjectFields, clonedRepoId, project).then((fieldIdMap) => {
-          this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project);
+        return this.getProjectFieldDefinition(clonedProjectMetadata, standardProjectFields, clonedRepoId, project).then((fieldIdMap) => {
+          return this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project).then(() => {
+            return clonedProjectMetadata;
+          });
         });
       });
     });
@@ -180,7 +182,7 @@ export class ProjectCloner {
     // Are there more issues to retrieve?
     if(project?.data?.organization?.projectV2?.items.pageInfo?.hasNextPage) {
       // Wait for 30 seconds to avoid hitting the rate limit
-      await new Promise(resolve => setTimeout(resolve, 30000));
+      await new Promise(resolve => setTimeout(resolve, 15000));
 
       const issueCursor = project.data.organization.projectV2.items.pageInfo.endCursor;
       if (!issueCursor) {
