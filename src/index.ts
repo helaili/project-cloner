@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { ProjectCloner } from './projectCloner.js';
+import { ProjectMetadata } from './api/projectMetadata.js';
 
 
 async function main() {
@@ -53,4 +54,4 @@ async function main() {
 main().catch(console.error);
 
 
-export { ProjectCloner }
+export { ProjectCloner, ProjectMetadata }
