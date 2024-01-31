@@ -4,6 +4,7 @@
     "target": "es2020", 
     "module": "node16",
     "moduleResolution": "node16",
+    "esModuleInterop": true,
     "strict": true,
     "verbatimModuleSyntax": false,
     "declaration": true,
