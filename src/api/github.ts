@@ -1,8 +1,8 @@
 import { OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CreateIssueMutation, CreateIssueMutationVariables, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables, ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, OrgIdDocument, RepoTemplateDocument, CloneRepoTemplateDocument, CloneProjectTemplateDocument, CreateIssueDocument, AddIssueToProjectDocument, SetProjectTextFieldValueDocument, SetProjectNumberFieldValueDocument, SetProjectDateFieldValueDocument, SetProjectSingleSelectFieldValueDocument, SetProjectIterationFieldValueDocument, ProjectIssuesDocument, ProjectFieldDefinitionDocument } from '../generated/gql/graphql.js';
 import { ProjectMetadata } from './projectMetadata.js';
 import { RepoMetadata } from './repoMetadata.js';
-import type { ApolloQueryResult, NormalizedCacheObject } from "@apollo/client/core";
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
+import type { ApolloQueryResult, NormalizedCacheObject } from "@apollo/client/core/index.js";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core/index.js";
 
 export class GitHubAPI {
   private token : string;
