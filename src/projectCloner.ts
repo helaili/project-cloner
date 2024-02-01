@@ -1,7 +1,7 @@
 import { ApolloQueryResult } from '@apollo/client';
 import { GitHubAPI } from './api/github.js';
 import type { ProjectMetadata } from './api/projectMetadata.js';
-import { ProjectIssuesQuery, ProjectV2ItemFieldTextValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldIterationValue } from './generated/gql/graphql.js';
+import { ProjectIssuesQuery, ProjectV2ItemFieldTextValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldIterationValue, IssueClosedStateReason, IssueStateReason, IssueState } from './generated/gql/graphql.js';
 
 export class ProjectCloner {
   private template_owner: string;
@@ -26,9 +26,7 @@ export class ProjectCloner {
   async clone() : Promise<ProjectMetadata>{
     const orgId = await this.github.getOrgId(this.template_owner)
     const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo)
-    const standardProjectFields = ['Title', 'Assignees', 'Status', 'Labels', 'Linked pull requests', 
-        'Tracks', 'Reviewers', 'Repository', 'Milestone', 'Tracked by'];
-
+    
     console.log(`Org id is ${orgId}, template repo id is ${templateRepo.id}`)
 
     // Create a new repository from the template template_owner/template_repo
@@ -58,7 +56,7 @@ export class ProjectCloner {
 
         console.log(`Cloned project id is ${clonedProjectMetadata.id}, number is ${clonedProjectMetadata.number}`)
         
-        return this.getProjectFieldDefinition(clonedProjectMetadata, standardProjectFields, clonedRepoId, project).then((fieldIdMap) => {
+        return this.getProjectFieldDefinition(clonedProjectMetadata, clonedRepoId, project).then((fieldIdMap) => {
           return this.cloneIssues(clonedRepoId, clonedProjectMetadata, fieldIdMap, project).then(() => {
             return clonedProjectMetadata;
           });
@@ -68,18 +66,24 @@ export class ProjectCloner {
   }
 
   // Getting the field IDs for the new project so we can set their values withing the new issues
-  private async getProjectFieldDefinition(clonedProjectMetadata: ProjectMetadata, standardProjectFields: string[], clonedRepoId: string, project: ApolloQueryResult<ProjectIssuesQuery>) : Promise<Map<string, string>> {
+  private async getProjectFieldDefinition(clonedProjectMetadata: ProjectMetadata, clonedRepoId: string, project: ApolloQueryResult<ProjectIssuesQuery>) : Promise<Map<string, string>> {
     return this.github.getProjectFieldDefinition(this.owner, clonedProjectMetadata.number).then((projectFieldDefinition) => {
       if (!projectFieldDefinition) {
         throw new Error(`Failed to retrieve project field definition for project ${clonedProjectMetadata.number} from organization ${this.owner}`);
       }
 
       const fieldIdMap = new Map<string, string>();
+      const standardProjectFields = ['Title', 'Assignees', 'Labels', 'Linked pull requests', 
+        'Tracks', 'Reviewers', 'Repository', 'Milestone', 'Tracked by'];
+
+    
       for (const field of projectFieldDefinition?.data?.organization?.projectV2?.fields?.nodes || []) {
         // We do not want the non-project specific fields (like title, assignee...)
         if (!standardProjectFields.includes(field?.name ?? '')) {
           console.log(`Field name is ${field?.name}, id is ${field?.id}`);
           fieldIdMap.set(field?.name ?? '', field?.id ?? '');
+        } else {
+          console.log(`Skipping field name ${field?.name}`);
         }
       }
 
@@ -96,6 +100,20 @@ export class ProjectCloner {
       const issueId = await this.github.createIssue(clonedRepoId, title, body);
       if(!issueId) {
         throw new Error(`Failed to create issue ${title} within repository ${this.repo}`);
+      }
+
+      // Check if the current type is an issue
+      if (issue?.content && 'state' in issue?.content) {
+        if (issue.content.state === IssueState.Closed) {
+          // Close the issue
+          let reason : IssueClosedStateReason
+          if (issue.content.stateReason === IssueStateReason.NotPlanned) {
+            reason = IssueClosedStateReason.NotPlanned;
+          } else {
+            reason = IssueClosedStateReason.Completed;
+          }
+          this.github.closeIssue(issueId, reason);
+        }
       }
 
       console.log(`Cloned issue "${title}" with id ${issueId} in repository with id ${clonedRepoId}`)

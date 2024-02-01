@@ -1,4 +1,4 @@
-import { OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CreateIssueMutation, CreateIssueMutationVariables, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables, ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, OrgIdDocument, RepoTemplateDocument, CloneRepoTemplateDocument, CloneProjectTemplateDocument, CreateIssueDocument, AddIssueToProjectDocument, SetProjectTextFieldValueDocument, SetProjectNumberFieldValueDocument, SetProjectDateFieldValueDocument, SetProjectSingleSelectFieldValueDocument, SetProjectIterationFieldValueDocument, ProjectIssuesDocument, ProjectFieldDefinitionDocument } from '../generated/gql/graphql.js';
+import { OrgIdQuery, OrgIdQueryVariables, RepoTemplateQuery, RepoTemplateQueryVariables, RepositoryVisibility, CloneRepoTemplateMutation, CloneRepoTemplateMutationVariables, CloneProjectTemplateMutation, CloneProjectTemplateMutationVariables, CreateIssueMutation, CreateIssueMutationVariables, AddIssueToProjectMutation, AddIssueToProjectMutationVariables, SetProjectTextFieldValueMutation, SetProjectTextFieldValueMutationVariables, SetProjectNumberFieldValueMutation, SetProjectNumberFieldValueMutationVariables, SetProjectDateFieldValueMutation, SetProjectDateFieldValueMutationVariables, SetProjectSingleSelectFieldValueMutation, SetProjectSingleSelectFieldValueMutationVariables, SetProjectIterationFieldValueMutation, SetProjectIterationFieldValueMutationVariables, ProjectIssuesQuery, ProjectIssuesQueryVariables, ProjectFieldDefinitionQuery, ProjectFieldDefinitionQueryVariables, OrgIdDocument, RepoTemplateDocument, CloneRepoTemplateDocument, CloneProjectTemplateDocument, CreateIssueDocument, AddIssueToProjectDocument, SetProjectTextFieldValueDocument, SetProjectNumberFieldValueDocument, SetProjectDateFieldValueDocument, SetProjectSingleSelectFieldValueDocument, SetProjectIterationFieldValueDocument, ProjectIssuesDocument, ProjectFieldDefinitionDocument, CloseIssueWithReasonDocument, CloseIssueWithReasonMutation, CloseIssueWithReasonMutationVariables, IssueClosedStateReason } from '../generated/gql/graphql.js';
 import { ProjectMetadata } from './projectMetadata.js';
 import { RepoMetadata } from './repoMetadata.js';
 import type { ApolloQueryResult, NormalizedCacheObject } from "@apollo/client/core/index.js";
@@ -112,6 +112,20 @@ export class GitHubAPI {
       variables: variables
     }).then((result) => {
       return result.data?.createIssue?.issue?.id;
+    });
+  }
+
+  async closeIssue(issueId: string, reason: IssueClosedStateReason) : Promise<string | undefined>  {
+    const variables = {
+      'issueId': issueId,
+		  'stateReason': reason    
+    }
+
+    return this.githubClient().mutate<CloseIssueWithReasonMutation, CloseIssueWithReasonMutationVariables>({
+      mutation: CloseIssueWithReasonDocument, 
+      variables: variables
+    }).then((result) => {
+      return result.data?.closeIssue?.issue?.id;
     });
   }
 

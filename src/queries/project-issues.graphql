@@ -21,6 +21,8 @@ query ProjectIssues($org: String!, $number: Int!, $issueCursor: String, $fieldCu
 						... on Issue {
 							title
 							body
+							state
+							stateReason
 						}
 						... on PullRequest {
 							title
