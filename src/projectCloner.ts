@@ -2,7 +2,6 @@ import { ApolloQueryResult } from '@apollo/client';
 import { GitHubAPI } from './api/github.js';
 import type { ProjectMetadata } from './api/projectMetadata.js';
 import { ProjectIssuesQuery, ProjectV2ItemFieldTextValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldIterationValue, IssueClosedStateReason, IssueStateReason, IssueState } from './generated/gql/graphql.js';
-const packageJson = require('./package.json');
 
 export class ProjectCloner {
   private template_owner: string;
@@ -25,8 +24,6 @@ export class ProjectCloner {
   }
 
   async clone() : Promise<ProjectMetadata>{
-    console.log(`****** Using module version ${packageJson.version} ******`);
-
     const orgId = await this.github.getOrgId(this.template_owner);
     const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo);
     
