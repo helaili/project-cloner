@@ -2,6 +2,7 @@ import { ApolloQueryResult } from '@apollo/client';
 import { GitHubAPI } from './api/github.js';
 import type { ProjectMetadata } from './api/projectMetadata.js';
 import { ProjectIssuesQuery, ProjectV2ItemFieldTextValue, ProjectV2ItemFieldNumberValue, ProjectV2ItemFieldDateValue, ProjectV2ItemFieldSingleSelectValue, ProjectV2ItemFieldIterationValue, IssueClosedStateReason, IssueStateReason, IssueState } from './generated/gql/graphql.js';
+const packageJson = require('./package.json');
 
 export class ProjectCloner {
   private template_owner: string;
@@ -24,13 +25,15 @@ export class ProjectCloner {
   }
 
   async clone() : Promise<ProjectMetadata>{
-    const orgId = await this.github.getOrgId(this.template_owner)
-    const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo)
+    console.log(`****** Using module version ${packageJson.version} ******`);
+
+    const orgId = await this.github.getOrgId(this.template_owner);
+    const templateRepo = await this.github.getRepoTemplate(this.template_owner, this.template_repo);
     
-    console.log(`Org id is ${orgId}, template repo id is ${templateRepo.id}`)
+    console.log(`Org id is ${orgId}, template repo id is ${templateRepo.id}`);
 
     // Create a new repository from the template template_owner/template_repo
-    const clonedRepoId = await this.github.cloneRepoTemplate(templateRepo.id, orgId, this.repo, templateRepo.description)
+    const clonedRepoId = await this.github.cloneRepoTemplate(templateRepo.id, orgId, this.repo, templateRepo.description);
 
     if (!clonedRepoId) {
       throw new Error(`Failed to create the new repository ${this.repo} from template ${this.template_repo}`);
@@ -80,10 +83,10 @@ export class ProjectCloner {
       for (const field of projectFieldDefinition?.data?.organization?.projectV2?.fields?.nodes || []) {
         // We do not want the non-project specific fields (like title, assignee...)
         if (!standardProjectFields.includes(field?.name ?? '')) {
-          console.log(`Field name is ${field?.name}, id is ${field?.id}`);
+          console.log(`Using field ${field?.name}`);
           fieldIdMap.set(field?.name ?? '', field?.id ?? '');
         } else {
-          console.log(`Skipping field name ${field?.name}`);
+          console.log(`Skipping field ${field?.name}`);
         }
       }
 
@@ -116,7 +119,7 @@ export class ProjectCloner {
         }
       }
 
-      console.log(`Cloned issue "${title}" with id ${issueId} in repository with id ${clonedRepoId}`)
+      console.log(`Cloned issue "${title}"`)
 
       // Add the issue to the project
       const projectItemId = await this.github.addIssueToProject(clonedProjectMetadata.id, issueId);
@@ -124,7 +127,7 @@ export class ProjectCloner {
         throw new Error(`Failed to add issue ${issueId} to project ${clonedProjectMetadata.id}`);
       }
 
-      console.log(`Added issue ${issueId} to project ${clonedProjectMetadata.number} with id ${clonedProjectMetadata.id}`)
+      console.log(`Added issue ${issueId} to project ${clonedProjectMetadata.number}`)
       
       // Going over the fields within the original project item (aka the issue within the project) to copy them to the new issue
       for(const fieldValue of issue?.fieldValues?.nodes || []) {
