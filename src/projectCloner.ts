@@ -124,7 +124,7 @@ export class ProjectCloner {
         throw new Error(`Failed to add issue ${issueId} to project ${clonedProjectMetadata.id}`);
       }
 
-      console.log(`Added issue ${issueId} to project ${clonedProjectMetadata.number}`)
+      console.log(`Added issue ${title} to project ${clonedProjectMetadata.number}`)
       
       // Going over the fields within the original project item (aka the issue within the project) to copy them to the new issue
       for(const fieldValue of issue?.fieldValues?.nodes || []) {
